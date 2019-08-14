@@ -2,19 +2,26 @@
   <div id="test-home">
 		<el-container>
 			<!-- 侧边栏 -->
-			<el-aside width="201px">
-				<el-radio-group v-model="isCollapse" style="margin-bottom: 20px;">
-						<el-radio-button :label="false">展开</el-radio-button>
-						<el-radio-button :label="true">收起</el-radio-button>
-				</el-radio-group>
+			<el-aside width="auto">
+			<!-- <img src="../assets/logo.png"> -->
 				<!-- :default-active='$route.path' 双向绑定-->
-				<el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse" :default-active='$route.path'>
+				<el-menu class="el-menu-vertical-demo" 
+				@open="handleOpen" 
+				@close="handleClose" 
+				:collapse="isCollapse" 
+				:default-active='$route.path'
+				:default-openeds="['0','1']"
+				>
 					<el-submenu v-for="(value,index) in asideItem" :key="index" :index="''+index"  >
 						<template slot="title">
 							<i :class="value.class"></i>
 							<span slot="title" >{{ value.aside }}</span>
 						</template>
-							<el-menu-item v-for="(value,index) in value.option" @click="addTab(value)" :index='value.path'>
+							<el-menu-item v-for="value in value.option" 
+							@click="addTab(value)" 
+							:index='value.path'
+							:key="value.path"
+							>
 								{{ value.name }}
 							</el-menu-item>
 					</el-submenu>
@@ -23,6 +30,42 @@
 			<el-container>
 				<!-- 头部 -->
 				<el-header>
+					
+				<el-row>
+					<!-- 左 -->
+				<el-tooltip class="tooltip" effect="dark" :content="isCollapse?'展开':'收起'" placement="right">
+                <el-button @click="isCollapse=!isCollapse" :icon="isCollapse?'el-icon-s-fold':'el-icon-s-unfold'"
+                  style="color:rgb(0, 0, 0);border: 0; float: left; background-color: rgb(255, 255, 255,0.4); 
+				  padding: 20px;margin:4px 20px 10px 0px ;" />
+				</el-tooltip>
+				  <!-- 中 -->
+				  <el-col :span="16"><div class="grid-content bg-purple-light">
+					<el-tabs v-model="editableTabsValue" type="card" @tab-remove="removeTab" @tab-click="clinkTab">
+						<el-tab-pane
+							v-for="(item, index) in editableTabs"
+							:key="item.name"
+							:label="item.title"
+							:name="item.name"
+							:closable='index>0' 
+						>      	
+							{{item.content}}
+						</el-tab-pane>
+					</el-tabs>
+				  </div></el-col>
+				  <!-- 右 -->
+				  <el-col :span="4"><div class="grid-content bg-purple">
+					<el-dropdown>
+						<i class="el-icon-setting" style="margin-right: 15px"></i>
+						<el-dropdown-menu slot="dropdown">
+						  <el-dropdown-item>查看</el-dropdown-item>
+						  <el-dropdown-item>新增</el-dropdown-item>
+						  <el-dropdown-item>删除</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
+					<span>王小虎</span>
+				  </div></el-col>
+				</el-row>
+					
 					<!-- <div style="margin-bottom: 20px;">
 						<el-button
 							size="small"
@@ -31,18 +74,6 @@
 							add tab
 						</el-button>
 					</div> -->
-					<el-tabs v-model="editableTabsValue" type="card" @tab-remove="removeTab" @tab-click="clinkTab">
-						<el-tab-pane
-							v-for="(item, index) in editableTabs"
-							:key="item.name"
-							:label="item.title"
-							:name="item.name"
-							:closable='index>0' 
-						>
-							{{item.content}}
-						</el-tab-pane>
-					</el-tabs>
-					
 					
 				</el-header>
 				<!-- 内容 -->
@@ -60,11 +91,12 @@ export default {
     data() {
 		return {
 			isCollapse: false,//组件
+			unique:false,		
 			//tab组件
-			editableTabsValue: '/',
+			editableTabsValue: '',
 			editableTabs: [{
 			  title: '首页',
-			  name: '/',
+			  name: '/firstMa',
 			  content: ''
 			}],
 			tabIndex: 2,
@@ -74,10 +106,10 @@ export default {
 					aside:"基础数据",
 					 class: "el-icon-menu",
 					option:[
-// 						{
-// 						name:"首页",
-// 						path:"firstMa"
-// 						},
+						{
+						name:"首页",
+						path:"/firstMa"
+						},
 						{
 						name:"班级管理",
 						path:"/classMa"
@@ -99,7 +131,7 @@ export default {
 				},
 				{
 					aside:"在线测试",
-					class: "el-icon-s-claim",
+					class: "el-icon-menu",
 					option:[
 						{
 						name:"试卷录入",
@@ -136,9 +168,10 @@ export default {
       },
 	/**
 	 * addTab 组件新增方法
+	 * @param {string} 新增
 	 */
 	addTab(menu) {
-		console.log(menu)
+		// console.log("菜单", menu)
         var exist = false;
       for (var i = 0; i < this.editableTabs.length; i++) {
         if (menu.name == this.editableTabs[i].title) {
@@ -161,13 +194,14 @@ export default {
       },
 	  //点击
 	clinkTab(name){
-		console.log("测试" , name)
+		console.log(name)
 		for (var m = 0; m < this.asideItem.length; m++) {
 			for (var n = 0; n < this.asideItem[m].option.length; n++) {
 			  var ser = this.asideItem[m].option;
-			  console.log(ser)
+			  // console.log(ser)
 			  if (ser[n].name == name.label) {
 				  this.$router.push(name.name)
+				  // console.log(name.name)
 				this.addTab(ser[n]);
 			  }
 		}
@@ -205,7 +239,7 @@ export default {
 
 </script>
 
-<style scoped="scoped">
+<style scoped="scoped" lang="less">
 a {
 	margin: 10px;
 	text-decoration: none;
@@ -227,7 +261,6 @@ a {
     background-color: #E9EEF3;
     color: #333;
     text-align: center;
-    line-height: 160px;
   }
   body > .el-container {
     margin-bottom: 40px;
@@ -235,6 +268,66 @@ a {
 /* 菜单 */
  .el-menu-vertical-demo:not(.el-menu--collapse) {
     width: 200px;
-    min-height: 400px;
+    // min-height: 710px;
   }
+  .el-menu{
+	  height: 100vh;
+  }
+ /* 图片 */
+.el-aside[data-v-7eb2bc79]{
+	line-height: 0px;
+	background-color: white;
+}
+/* 头部 */
+.el-row {
+    margin-bottom: 20px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  .el-col {
+    border-radius: 4px;
+  }
+  
+  /deep/ .el-menu{
+	  background-color: rgba(0,0,0,0.4)
+  }
+  .el-menu-item{
+	  color: white;
+  }
+  /deep/ .el-submenu__title{
+	  color: white;
+  }
+  /deep/ .el-submenu__title i{
+	  color: white;
+  }
+ /deep/ .el-menu-item is-active{
+	 background-color: red;
+ }
+//  .el-menu-item.is-active{
+// 	 background-color: black;
+//  }
+ .el-menu-item:focus, .el-menu-item:hover{
+	 background-color: black;
+ }
+/deep/ element.style{
+	background-color: black;
+}
+/deep/ [data-v-7eb2bc79] .el-submenu__title:hover{
+	background-color: black;
+}
+/deep/.el-submenu__title{
+	background-color: rgba(0,0,0,0.4);
+}
+
+.el-header[data-v-7eb2bc79]{
+	background-color: rgba(0,0,0,0.6);
+}
+/deep/ .el-tabs__item {
+	color: white;
+}
+/deep/ .el-header[data-v-7eb2bc79]{
+	color: white;
+}
+
 </style>
