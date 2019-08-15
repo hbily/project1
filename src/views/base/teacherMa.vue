@@ -314,9 +314,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-	.clearfix {
-		  text-align: right;
-		}
 	/deep/.el-breadcrumb {
 	  margin: 20px;
 	}
