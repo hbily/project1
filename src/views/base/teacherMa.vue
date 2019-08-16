@@ -5,12 +5,24 @@
 		<el-breadcrumb-item>老师管理</el-breadcrumb-item>
 		</el-breadcrumb>
 		<el-card class="box-card">
+			<!-- 单选按钮组 -->
+		<div>
+			<el-radio-group v-model="radio" @change="teacherData=filterData">
+			  <el-radio
+			    v-for="(item,index) in radioData"
+			    :key="index"
+			    :label="item.userTypeTypeName"
+			  >{{item.userTypeTypeName}}</el-radio>
+			</el-radio-group>
+		</div>
+			<!-- 新增 -->
 			<div slot="header" class="clearfix">
 				<el-button type="text" @click="addTeacher()">
 				新增班级
 				<i class="el-icon-circle-plus-outline"></i>
 				</el-button>
-     		</div>
+     	</div>
+			<!-- 数据表 -->
 			<el-table
 			:data="teacherData"
 			style="width: 100%;"
@@ -101,7 +113,13 @@ export default {
 				userPassword:"",//密码
 				userTypeTypeName:"",//角色
 				userUserTypeId:""//角色id
-			}
+			},
+			filterTable: [], //过滤后的表格
+			radioData: [
+				//单选按钮数据
+				{ userTypeTypeName: "全部" }
+			],
+			radio: "全部" //默认选中全部单选按钮
 		};
 	},
 	created() {
@@ -116,7 +134,8 @@ export default {
 			var that = this;
 			that.axios.get('User/GetTeachers').then(res => {
 					that.teacherData = res.data;
-					console.log('老师信息', that.teacherData);
+					that.filterTable = res.data;
+					// console.log('老师信息', that.teacherData);
 				}).catch(err => {
 					console.log(err);
 				});
@@ -128,6 +147,7 @@ export default {
 			var that = this;
 			that.axios.get('UserType/GetUserRoles').then(res => {
 					that.typeData = res.data;
+					that.radioData.push(...res.data); //把所有的角色信息存储到单选按钮数组中
 					// console.log('角色信息', that.typeData);
 				}).catch(err => {
 					console.log(err);
@@ -141,7 +161,7 @@ export default {
 		  var type = that.typeData.find(item => {
 		    return that.form.userTypeTypeName == item.userTypeTypeName;
 		  });
-			 console.log(type)
+			 // console.log(type)
 		  that.form.userUserTypeId = type.userTypeId;
 			that.form.userTypeTypeName = type.userTypeTypeName;
 		   // console.log(that.form.userUserTypeId);
@@ -169,7 +189,7 @@ export default {
 		 */
 		submitAdd(form) {
 		  let that = this;
-		  console.log(that.form.userName);
+		  // console.log(that.form.userName);
 		  that.$refs[form].validate(valid => {
 		    if (valid) {
 		      that.axios
@@ -181,10 +201,10 @@ export default {
 							userUserTypeId: that.form.userUserTypeId
 		        })
 		        .then(res => {
-		          console.log("新增信息",res.data.code);
-							console.log(res.data.data)
+		          // console.log("新增信息",res.data.code);
+							// console.log(res.data.data)
 		          if (res.data.code == 1) {
-								console.log(that.form.userTypeTypeName)
+								// console.log(that.form.userTypeTypeName)
 								res.data.data.userName = that.form.userName;
 								res.data.data.userMobile = that.form.userMobile;
 								res.data.data.userSex = that.form.userSex;
@@ -307,8 +327,23 @@ export default {
 	      }
 	    });
 	    that.dialogFormVisible = false;
-	  },
-		
+	  }
+	},
+	computed: {
+	  /**
+	   * 按单选按钮的值筛选老师
+	   */
+	  filterData() {
+	    let that = this;
+	    if (that.radio == "全部") {
+	      return (that.teacherData = that.filterTable);
+	    } else {
+	      return that.filterTable.filter(item => {
+	        return item.userTypeTypeName == that.radio;
+	      });
+	      // console.log(that.radio)
+	    }
+	  }
 	}
 };
 </script>

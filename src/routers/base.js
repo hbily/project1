@@ -3,10 +3,16 @@ import studentMa from '../views/base/studentMa.vue'
 import teacherMa from '../views/base/teacherMa.vue'
 import changePas from '../views/base/changePas.vue'
 import firstMa from '../views/base/firstMa.vue'
+import typeMa from '../views/base/typeMa.vue'
 
 
 export default
  [
+	 {
+	   path: '/typeMa',
+	   name: 'typeMa',
+	   component: typeMa
+	 },
     {
       path: '/classMa',
       name: 'classMa',

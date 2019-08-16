@@ -35,7 +35,7 @@
 					<!-- 左 -->
 				<el-tooltip class="tooltip" effect="dark" :content="isCollapse?'展开':'收起'" placement="right">
                 <el-button @click="isCollapse=!isCollapse" :icon="isCollapse?'el-icon-s-fold':'el-icon-s-unfold'"
-                  style="color:rgb(0, 0, 0);border: 0; float: left; background-color: rgb(255, 255, 255,0.4); 
+                  style="color:white;border: 0; float: left; background-color: rgb(255, 255, 255,0.4); 
 				  padding: 20px;margin:4px 20px 10px 0px ;" />
 				</el-tooltip>
 				  <!-- 中 -->
@@ -126,6 +126,10 @@ export default {
 						name:"修改密码",
 						path:"/changePas"
 						},
+						{
+						name:"角色管理",
+						path:"/typeMa"
+						}
 					]
 					
 				},
@@ -290,7 +294,7 @@ a {
   }
   
   /deep/ .el-menu{
-	  background-color: rgba(0,0,0,0.4)
+	  background-color: #666
   }
   .el-menu-item{
 	  color: white;
@@ -329,5 +333,7 @@ a {
 /deep/ .el-header[data-v-7eb2bc79]{
 	color: white;
 }
-
+/deep/ [data-v-7eb2bc79] .el-submenu__title{
+	background-color: #666;
+}
 </style>
